@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import { page } from "$app/stores";
     import type { Word, TestItem, TestResult } from "../../../types/deck";
+    import {goto} from '$app/navigation';
 
     const deckId = $page.params.deckId;
     let words: Word[] = [];
@@ -20,20 +21,25 @@
         });
     });
 
-    const onSubmit = () => {
+  async function onSubmit(){
         const testResult = {
             date: `${new Date().toUTCString()}`,
             testItems: testItems,
             deckId: parseInt(deckId)
         };
-        fetch("http://localhost:3000/results/", {
+            
+            const response = await fetch("http://localhost:3000/results/", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: {"Content-Type": "application/json" },
             body: JSON.stringify(testResult),
         });
-    };
+        const result = await response.json()
+        // console.log(result.id)
+        goto(`/${deckId}/results/${result.id}`);
+    }
+
+
+
 </script>
 
 <div class="test-list">

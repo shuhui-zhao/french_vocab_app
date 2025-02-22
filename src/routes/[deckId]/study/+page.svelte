@@ -36,8 +36,7 @@
 
     const starWord = async (wordId: number) => {
         words = words.map((word) => {
-            console.log(`${typeof word.id}; ${word.id}; ${wordId}`)
-            if (wordId && word.id == wordId) {
+            if (word.id == wordId) {
                 word.starred = !word.starred;
                 return word;
             }
