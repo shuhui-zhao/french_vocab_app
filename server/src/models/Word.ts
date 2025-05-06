@@ -18,4 +18,4 @@ const WordSchema = new Schema<IWord>({
   example: { type: String, required: true },
 });
 
-export const Word = model<IWord>("Word", WordSchema);
+export const Word = model<IWord>("Word", WordSchema, "words");
