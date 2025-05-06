@@ -9,11 +9,19 @@ router.get("/", async (req, res) => {
   res.json(products);
 });
 
+//save words to mongodb
 router.post("/newWords", async (req, res) => {
   try {
-    const newProduct = new Word(req.body);
-    await newProduct.save();
-    res.json(newProduct);
+    const input = req.body;
+
+    const newDataArray = Array.isArray(input) ? input : [input];
+    const savedWords = await Promise.all(
+      newDataArray.map(async (wordData) => {
+        const newWord = new Word(wordData);
+        await newWord.save();
+      })
+    );
+    res.json(savedWords);
   } catch (err: unknown) {
     if (err instanceof Error) {
       res.status(500).json({ err: err.message });
