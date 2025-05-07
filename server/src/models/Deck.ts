@@ -6,7 +6,7 @@ interface IDeck {
 }
 
 const DeckSchema = new Schema<IDeck>({
-  id: { type: Number, required: true },
+  id: { type: Number, required: true, unique: true },
   name: { type: String, required: true },
 });
 

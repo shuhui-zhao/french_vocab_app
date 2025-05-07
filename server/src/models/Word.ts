@@ -10,7 +10,7 @@ interface IWord {
 }
 
 const WordSchema = new Schema<IWord>({
-  id: { type: Number, required: true },
+  id: { type: Number, required: true, unique: true },
   word: { type: String, required: true },
   type: { type: String, required: true },
   definition: { type: String, required: true },

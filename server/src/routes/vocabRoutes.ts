@@ -56,4 +56,23 @@ router.post("/newDecks", async (req, res) => {
   }
 });
 
+//delete deck by id
+router.delete("/decks/delete/:id", async (req: any, res: Response) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) {
+    res.json({ error: "Invalid numeric ID" });
+  }
+  try {
+    const deletedDeck = await Deck.findOneAndDelete({ id });
+    if (!deletedDeck) {
+      res.status(404).json({ error: "Deck not found" });
+    }
+    res.json(deletedDeck);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.json({ err: err.message });
+    }
+    res.status(500).json({ error: "Unknown error" });
+  }
+});
 export default router;
