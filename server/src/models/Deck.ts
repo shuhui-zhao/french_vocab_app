@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-interface IDeck {
+export interface IDeck {
   id: number;
   name: string;
 }

@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-interface IWord {
+export interface IWord {
   id: number;
   word: string;
   type: string;

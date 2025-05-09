@@ -5,7 +5,7 @@
     let decks: Deck[] = [];
 
     onMount(async () => {
-        decks = await fetch("http://localhost:3000/decks").then((res) =>
+        decks = await fetch("http://localhost:3001/api/decks").then((res) =>
             res.json()
         );
     });

@@ -1,18 +1,18 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { page } from "$app/state";
-    import type { Word } from "../../../types/deck";
+    import type { IWord } from "../../../../server/src/models/Word";
 
     const deckId = page.params.deckId;
     let curIndex: number = 0;
     let isFront: boolean = true;
-    let words: Word[] = [];
+    let words: IWord[] = [];
 
     $: starredWords = words.filter((word) => word.starred);
     $: notStarredWords = words.filter((word) => !word.starred);
 
     onMount(async () => {
-        words = await fetch(`http://localhost:3000/words?deckId=${deckId}`).then(
+        words = await fetch(`http://localhost:3001/api/words?deckId=${deckId}`).then(
             (res) => res.json()
         );
     });
@@ -34,24 +34,26 @@
         isFront = !isFront;
     };
 
+  
     const starWord = async (wordId: number) => {
         words = words.map((word) => {
             if (word.id == wordId) {
-                word.starred = !word.starred;
-                return word;
+                return {...word,starred:!word.starred}
             }
             return word;
         });
-        await persistWord(wordId);
+        const wordToUpdate = words.find((w)=>w.id === wordId)
+        if (wordToUpdate){await persistWord(wordToUpdate)};
     };
 
-    const persistWord = async (wordId: number) => {
-        await fetch(`http://localhost:3000/words/${wordId}`, {
+    //add put to change starred in the backend
+    const persistWord = async (word:IWord) => {
+         await fetch(`http://localhost:3001/api/words/star/${word.id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(words[curIndex]),
+            body: JSON.stringify({starred:word.starred}),
         });
     };
 

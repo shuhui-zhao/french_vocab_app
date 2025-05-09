@@ -57,7 +57,7 @@ router.post("/newDecks", async (req, res) => {
 });
 
 //delete deck by id
-router.delete("/decks/delete/:id", async (req: any, res: Response) => {
+router.delete("/decks/delete/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
     res.json({ error: "Invalid numeric ID" });
@@ -68,6 +68,30 @@ router.delete("/decks/delete/:id", async (req: any, res: Response) => {
       res.status(404).json({ error: "Deck not found" });
     }
     res.json(deletedDeck);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.json({ err: err.message });
+    }
+    res.status(500).json({ error: "Unknown error" });
+  }
+});
+
+//put: update starred words
+router.put("/words/star/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+  const starred = req.body.starred;
+  if (isNaN(id)) {
+    res.json({ error: "Invalid numeric ID" });
+  }
+  try {
+    const updateStarredWord = await Word.findOneAndUpdate(
+      { id },
+      { starred },
+      { new: true }
+    );
+    if (!updateStarredWord) {
+      res.status(404).json({ error: "Word not found" });
+    }
   } catch (err: unknown) {
     if (err instanceof Error) {
       res.json({ err: err.message });
