@@ -1,8 +1,8 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import type { Deck } from "../types/deck";
+    import type { IDeck } from "../../server/src/models/Deck";
 
-    let decks: Deck[] = [];
+    let decks: IDeck[] = [];
 
     onMount(async () => {
         decks = await fetch("http://localhost:3001/api/decks").then((res) =>
