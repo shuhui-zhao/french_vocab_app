@@ -3,18 +3,22 @@
     import { page } from "$app/state";
     import type { IWord } from "../../../../server/src/models/Word";
 
-    const deckId = page.params.deckId;
+    let deckId: string;
     let curIndex: number = 0;
     let isFront: boolean = true;
     let words: IWord[] = [];
+ 
 
+    $:deckId = page.params.deckId;
     $: starredWords = words.filter((word) => word.starred);
     $: notStarredWords = words.filter((word) => !word.starred);
+
 
     onMount(async () => {
         words = await fetch(`http://localhost:3001/api/words?deckId=${deckId}`).then(
             (res) => res.json()
         );
+    console.log(deckId);
     });
 
     const arrowLeftKeyHandler = () => {

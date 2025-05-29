@@ -4,10 +4,25 @@ import { Deck } from "../models/Deck";
 
 const router = express.Router();
 
-// Get all words
+//Get words by id
 router.get("/words", async (req, res) => {
-  const words = await Word.find();
-  res.json(words);
+  const deckId = parseInt(req.query.deckId as string);
+
+  console.log(deckId);
+  if (isNaN(deckId)) {
+    // const words = await Word.find();
+    // res.json(words);
+    res.json({ error: "invalid deckId" });
+  }
+
+  try {
+    const words = await Word.find({ deckId });
+    res.json(words);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 });
 
 //Get all decks

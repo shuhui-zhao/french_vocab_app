@@ -1,15 +1,17 @@
 <script lang="ts">
     import type { Deck } from "../../types/deck";
-    import { page } from "$app/stores";
+    import { page } from "$app/state";
     import { onMount } from "svelte";
-$page
-    const deckId = $page.params.deckId;
+
     
+    let deckId: number;
     let deckTitle = "";
+
+    $: deckId= parseInt(page.params.deckId);
 
     onMount(async () => {
         const deck: Deck = await fetch(
-            `http://localhost:3000/decks/${deckId}`
+            `http://localhost:3001/api/words?deckId=${deckId}`
         ).then((res) => res.json());
         deckTitle = deck.name;
     });
