@@ -1,15 +1,15 @@
 <script lang="ts">
     import { page } from "$app/state";
     import { onMount } from "svelte";
-    import type { TestResult } from "../../../types/deck";
+    import type {IResult} from "../../../../server/src/models/TestResult";
 
     const deckId = page.params.deckId;
 
-    let results: TestResult[] = [];
+    let results: IResult[] = $state([]);
 
     onMount(async () => {
         results = (await fetch(
-            `http://localhost:3000/results?deckId=${deckId}`
+            `http://localhost:3001/api/results?deckId=${deckId}`
         ).then((res) => res.json())) ?? [];
         console.log(results)
     });
@@ -19,7 +19,7 @@
     <div class="result-list">
         <div class="result-list-item">
             <h3 class="result-title">{result.date}</h3>
-            <a class="link-button" href="/{deckId}/results/{result.id}"
+            <a class="link-button" href="/{deckId}/results/{result._id}"
                 ><strong>View</strong></a
             >
         </div>

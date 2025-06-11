@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import { Word } from "../models/Word";
 import { Deck } from "../models/Deck";
+import { TestResult } from "../models/TestResult";
 
 const router = express.Router();
 
@@ -8,7 +9,7 @@ const router = express.Router();
 router.get("/words", async (req, res) => {
   const deckId = parseInt(req.query.deckId as string);
 
-  console.log(deckId);
+  // console.log(deckId);
   if (isNaN(deckId)) {
     // const words = await Word.find();
     // res.json(words);
@@ -91,7 +92,7 @@ router.delete("/decks/delete/:id", async (req, res) => {
   }
 });
 
-//put: update starred words
+//put: update starred words by id
 router.put("/words/star/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   const starred = req.body.starred;
@@ -114,4 +115,60 @@ router.put("/words/star/:id", async (req, res) => {
     res.status(500).json({ error: "Unknown error" });
   }
 });
+
+//update starred word based on test results: update a batch
+router.patch("/words/updateStarred", async (req, res) => {
+  const input = req.body; // [{ id: 1, starred: true }, ...]
+  const updates = Array.isArray(input) ? input : [input];
+  try {
+    const updatePromises = updates.map(({ id, starred }) =>
+      Word.updateOne({ id }, { $set: { starred } })
+    );
+
+    await Promise.all(updatePromises);
+
+    res.json({ message: "Words updated successfully." });
+  } catch (err) {
+    console.error("Failed to update starred values:", err);
+    res.status(500).json({ error: "Failed to update words." });
+  }
+});
+
+//save test results to mongodb
+
+router.post("/testResults", async (req, res) => {
+  const input = req.body;
+
+  try {
+    const newResult = new TestResult(input);
+    const savedResult = await newResult.save(); // Return a single object if only one was saved
+    res.status(201).json(savedResult);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error("Error saving test results:", err.message);
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
+  }
+});
+
+//get the test results by deckId
+router.get("/results", async (req, res) => {
+  const deckId = parseInt(req.query.deckId as string);
+  console.log(deckId);
+  if (isNaN(deckId)) {
+    const results = await TestResult.find();
+    res.json({ error: "invalid deckId" });
+  }
+  try {
+    const results = await TestResult.find({ deckId });
+    res.json(results);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+});
+
 export default router;
