@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { Word } from "../models/Word";
 import { Deck } from "../models/Deck";
 import { TestResult } from "../models/TestResult";
-
+import { Types } from "mongoose";
 const router = express.Router();
 
 //Get words by id
@@ -163,6 +163,20 @@ router.get("/results", async (req, res) => {
   }
   try {
     const results = await TestResult.find({ deckId });
+    res.json(results);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+});
+
+//get the results by _id
+
+router.get("/result", async (req, res) => {
+  const resultId = new Types.ObjectId(req.query.resultId as string);
+  try {
+    const results = await TestResult.findOne({ _id: resultId });
     res.json(results);
   } catch (err: unknown) {
     if (err instanceof Error) {

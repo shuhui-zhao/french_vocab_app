@@ -1,9 +1,9 @@
 import type { ITest } from "./TestItem";
 import { TestItemSchema } from "./TestItem";
-import { Schema, model } from "mongoose";
+import { Schema, model, Types } from "mongoose";
 
 export interface IResult {
-  // id: string;
+  _id?: Types.ObjectId;
   date: string;
   testItems: ITest[];
   deckId: number;

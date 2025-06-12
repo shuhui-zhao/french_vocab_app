@@ -1,37 +1,41 @@
 <script lang="ts">
     import { page } from "$app/state";
     import { onMount } from "svelte";
-    import type { TestItem, TestResult } from "../../../../types/deck";
+    import type { IResult } from "../../../../../server/src/models/TestResult";
+    import type {ITest} from "../../../../../server/src/models/TestItem";
 
-    const deckId = page.params.deckId;
+    // const deckId = page.params.deckId;
     const resultId = page.params.resultId;
 
-    let items: TestItem[] = [];
+    let items: ITest[] = [];
 
     onMount(async () => {
-        const result: TestResult[] = await fetch(
-            `http://localhost:3000/results?deckId=${deckId}`
+        try{        const result:IResult = await fetch(
+            `http://localhost:3001/api/result?resultId=${resultId}`
         )
-            .then((res) => res.json())
-            .then((results: TestResult[]) =>
-                results.filter((result) => result.id.toString() === resultId)
-            );
-        items = result[0].testItems;
-    });
+            .then((res) => res.json());
+            items= result.testItems ?? [];
+            console.log(result.testItems);
+
+    }catch(err:unknown){
+        console.error("Failed to load test result:", err);
+    };});
+
+
 </script>
 
 {#each items as item}
-    {#if item.entered === item.expected}
+    {#if item.entered === item.testWord}
         <div class="item-list item-list-correct">
             <div class="item-list-item">
-                <h1 class="item-list-content">{item.expected}</h1>
+                <h1 class="item-list-content">{item.testWord}</h1>
                 <h1 class="item-list-content">{item.entered}</h1>
             </div>
         </div>
     {:else}
         <div class="item-list item-list-wrong">
             <div class="item-list-item">
-                <h1 class="item-list-content">{item.expected}</h1>
+                <h1 class="item-list-content">{item.testWord}</h1>
                 <h1 class="item-list-content">{item.entered}</h1>
             </div>
         </div>
